@@ -452,8 +452,37 @@ class PyPIRepository(BaseRepository):
         logger = logging.getLogger()
         for handler in logger.handlers:
             if handler.name == "console":  # pragma: no branch
-                assert isinstance(handler, logging.StreamHandler)
-                handler.stream = log.stream
+                # pip >= 22.0 uses RichHandler
+                # from https://github.com/Textualize/rich
+                try:
+                    s = handler.console.file
+                except AttributeError:
+                    pass
+                else:
+                    # TODO: use typing.Protocol when dropping <py38 support
+                    if hasattr(s, 'write') and callable(s.write):  # pragma: no branch
+                        handler.console.file = log.stream
+                    else:  # pragma: no cover
+                        log.warning("'console' logging handler stream is not writable")
+
+                    break
+
+                # pip < 22.0 uses standard StreamHandler
+                try:
+                    s = handler.stream
+                except AttributeError:
+                    pass
+                else:
+                    if hasattr(s, 'write') and callable(s.write):  # pragma: no branch
+                        handler.stream = log.stream
+                    else:  # pragma: no cover
+                        log.warning("'console' logging handler stream is not writable")
+
+                    break
+
+                # This warning is a signal that this block should be removed/revisited,
+                # because of pip possibly refactoring its logging config.
+                log.warning("Unable to find stream for 'console' logging handler")
                 break
         else:  # pragma: no cover
             # There is always a console handler. This warning would be a signal that
