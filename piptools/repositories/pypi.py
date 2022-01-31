@@ -455,13 +455,13 @@ class PyPIRepository(BaseRepository):
                 # pip >= 22.0 uses RichHandler
                 # from https://github.com/Textualize/rich
                 try:
-                    s = handler.console.file
+                    s = handler.console.file  # type: ignore
                 except AttributeError:
                     pass
                 else:
                     # TODO: use typing.Protocol when dropping <py38 support
                     if hasattr(s, "write") and callable(s.write):  # pragma: no branch
-                        handler.console.file = log.stream
+                        handler.console.file = log.stream  # type: ignore
                     else:  # pragma: no cover
                         log.warning("'console' logging handler stream is not writable")
 
@@ -469,12 +469,12 @@ class PyPIRepository(BaseRepository):
 
                 # pip < 22.0 uses standard StreamHandler
                 try:
-                    s = handler.stream
+                    s = handler.stream  # type: ignore
                 except AttributeError:
                     pass
                 else:
                     if hasattr(s, "write") and callable(s.write):  # pragma: no branch
-                        handler.stream = log.stream
+                        handler.stream = log.stream  # type: ignore
                     else:  # pragma: no cover
                         log.warning("'console' logging handler stream is not writable")
 
