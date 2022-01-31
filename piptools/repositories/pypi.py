@@ -460,7 +460,7 @@ class PyPIRepository(BaseRepository):
                     pass
                 else:
                     # TODO: use typing.Protocol when dropping <py38 support
-                    if hasattr(s, 'write') and callable(s.write):  # pragma: no branch
+                    if hasattr(s, "write") and callable(s.write):  # pragma: no branch
                         handler.console.file = log.stream
                     else:  # pragma: no cover
                         log.warning("'console' logging handler stream is not writable")
@@ -473,7 +473,7 @@ class PyPIRepository(BaseRepository):
                 except AttributeError:
                     pass
                 else:
-                    if hasattr(s, 'write') and callable(s.write):  # pragma: no branch
+                    if hasattr(s, "write") and callable(s.write):  # pragma: no branch
                         handler.stream = log.stream
                     else:  # pragma: no cover
                         log.warning("'console' logging handler stream is not writable")
